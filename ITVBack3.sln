@@ -1,7 +1,11 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual Studio 2010
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.27130.2027
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ITVBack3", "ITVBack3\ITVBack3.csproj", "{76F70454-5BEB-4B3E-9823-A3ACD992BF1B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VideoBack", "VideoBack\VideoBack.csproj", "{58F8B19E-8593-4519-98FC-C65D5884B498}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -23,8 +27,21 @@ Global
 		{76F70454-5BEB-4B3E-9823-A3ACD992BF1B}.Release|Mixed Platforms.Build.0 = Release|x86
 		{76F70454-5BEB-4B3E-9823-A3ACD992BF1B}.Release|x86.ActiveCfg = Release|x86
 		{76F70454-5BEB-4B3E-9823-A3ACD992BF1B}.Release|x86.Build.0 = Release|x86
+		{58F8B19E-8593-4519-98FC-C65D5884B498}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{58F8B19E-8593-4519-98FC-C65D5884B498}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
+		{58F8B19E-8593-4519-98FC-C65D5884B498}.Debug|Mixed Platforms.Build.0 = Debug|x86
+		{58F8B19E-8593-4519-98FC-C65D5884B498}.Debug|x86.ActiveCfg = Debug|x86
+		{58F8B19E-8593-4519-98FC-C65D5884B498}.Debug|x86.Build.0 = Debug|x86
+		{58F8B19E-8593-4519-98FC-C65D5884B498}.Release|Any CPU.ActiveCfg = Release|x86
+		{58F8B19E-8593-4519-98FC-C65D5884B498}.Release|Mixed Platforms.ActiveCfg = Release|x86
+		{58F8B19E-8593-4519-98FC-C65D5884B498}.Release|Mixed Platforms.Build.0 = Release|x86
+		{58F8B19E-8593-4519-98FC-C65D5884B498}.Release|x86.ActiveCfg = Release|x86
+		{58F8B19E-8593-4519-98FC-C65D5884B498}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {CEF7EFFF-6403-434B-9C41-412B21549D93}
 	EndGlobalSection
 EndGlobal
