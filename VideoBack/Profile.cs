@@ -11,18 +11,18 @@ namespace VideoBack
     public class Profile
     {
         public string Cams { get; set; }
-        public bool IsLocalScan { get; set; }
         public string DestFolder { get; set; }
-        public List<string> SourceFolders { get; set; }
+        public string SourceUrl { get; set; }
+        public string Username { get; set; }
+        public string Password { get; set; }
 
         public Profile()
         {
-            SourceFolders = new List<string>();
         }
 
         public static Profile DefaultProfile()
         {
-            return new Profile { Cams = "22", IsLocalScan = true };
+            return new Profile { Cams = "22" };
         }
 
         /// <summary>

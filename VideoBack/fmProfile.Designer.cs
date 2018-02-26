@@ -28,12 +28,6 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.gbVideoSource = new System.Windows.Forms.GroupBox();
-            this.buRemoveSource = new System.Windows.Forms.Button();
-            this.buAddSource = new System.Windows.Forms.Button();
-            this.lbSources = new System.Windows.Forms.ListBox();
-            this.rbList = new System.Windows.Forms.RadioButton();
-            this.rbLocalDisk = new System.Windows.Forms.RadioButton();
             this.paButton = new System.Windows.Forms.Panel();
             this.buOk = new System.Windows.Forms.Button();
             this.buCancel = new System.Windows.Forms.Button();
@@ -74,80 +68,15 @@
             this.chb2 = new System.Windows.Forms.CheckBox();
             this.chb1 = new System.Windows.Forms.CheckBox();
             this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
-            this.gbVideoSource.SuspendLayout();
+            this.laSourceUrl = new System.Windows.Forms.Label();
+            this.tbSourceUrl = new System.Windows.Forms.TextBox();
+            this.laUsername = new System.Windows.Forms.Label();
+            this.tbUserName = new System.Windows.Forms.TextBox();
+            this.laPassword = new System.Windows.Forms.Label();
+            this.tbPassword = new System.Windows.Forms.TextBox();
             this.paButton.SuspendLayout();
             this.gbCams.SuspendLayout();
             this.SuspendLayout();
-            // 
-            // gbVideoSource
-            // 
-            this.gbVideoSource.Controls.Add(this.buRemoveSource);
-            this.gbVideoSource.Controls.Add(this.buAddSource);
-            this.gbVideoSource.Controls.Add(this.lbSources);
-            this.gbVideoSource.Controls.Add(this.rbList);
-            this.gbVideoSource.Controls.Add(this.rbLocalDisk);
-            this.gbVideoSource.Location = new System.Drawing.Point(12, 12);
-            this.gbVideoSource.Name = "gbVideoSource";
-            this.gbVideoSource.Size = new System.Drawing.Size(412, 183);
-            this.gbVideoSource.TabIndex = 0;
-            this.gbVideoSource.TabStop = false;
-            this.gbVideoSource.Text = "Источник";
-            // 
-            // buRemoveSource
-            // 
-            this.buRemoveSource.Enabled = false;
-            this.buRemoveSource.Location = new System.Drawing.Point(132, 150);
-            this.buRemoveSource.Name = "buRemoveSource";
-            this.buRemoveSource.Size = new System.Drawing.Size(93, 23);
-            this.buRemoveSource.TabIndex = 4;
-            this.buRemoveSource.Text = "Удалить папку";
-            this.buRemoveSource.UseVisualStyleBackColor = true;
-            this.buRemoveSource.Click += new System.EventHandler(this.buRemoveSource_Click);
-            // 
-            // buAddSource
-            // 
-            this.buAddSource.Enabled = false;
-            this.buAddSource.Location = new System.Drawing.Point(18, 150);
-            this.buAddSource.Name = "buAddSource";
-            this.buAddSource.Size = new System.Drawing.Size(107, 23);
-            this.buAddSource.TabIndex = 3;
-            this.buAddSource.Text = "Добавить папку";
-            this.buAddSource.UseVisualStyleBackColor = true;
-            this.buAddSource.Click += new System.EventHandler(this.buAddSource_Click);
-            // 
-            // lbSources
-            // 
-            this.lbSources.Enabled = false;
-            this.lbSources.FormattingEnabled = true;
-            this.lbSources.Location = new System.Drawing.Point(15, 65);
-            this.lbSources.Name = "lbSources";
-            this.lbSources.Size = new System.Drawing.Size(381, 82);
-            this.lbSources.TabIndex = 2;
-            this.lbSources.DoubleClick += new System.EventHandler(this.lbSources_DoubleClick);
-            // 
-            // rbList
-            // 
-            this.rbList.AutoSize = true;
-            this.rbList.Location = new System.Drawing.Point(15, 42);
-            this.rbList.Name = "rbList";
-            this.rbList.Size = new System.Drawing.Size(95, 17);
-            this.rbList.TabIndex = 1;
-            this.rbList.Text = "Список папок";
-            this.rbList.UseVisualStyleBackColor = true;
-            this.rbList.CheckedChanged += new System.EventHandler(this.rbLocalDisk_CheckedChanged);
-            // 
-            // rbLocalDisk
-            // 
-            this.rbLocalDisk.AutoSize = true;
-            this.rbLocalDisk.Checked = true;
-            this.rbLocalDisk.Location = new System.Drawing.Point(15, 19);
-            this.rbLocalDisk.Name = "rbLocalDisk";
-            this.rbLocalDisk.Size = new System.Drawing.Size(183, 17);
-            this.rbLocalDisk.TabIndex = 0;
-            this.rbLocalDisk.TabStop = true;
-            this.rbLocalDisk.Text = "Сканировать локальные диски";
-            this.rbLocalDisk.UseVisualStyleBackColor = true;
-            this.rbLocalDisk.CheckedChanged += new System.EventHandler(this.rbLocalDisk_CheckedChanged);
             // 
             // paButton
             // 
@@ -156,7 +85,7 @@
             this.paButton.Dock = System.Windows.Forms.DockStyle.Right;
             this.paButton.Location = new System.Drawing.Point(430, 0);
             this.paButton.Name = "paButton";
-            this.paButton.Size = new System.Drawing.Size(102, 366);
+            this.paButton.Size = new System.Drawing.Size(102, 322);
             this.paButton.TabIndex = 1;
             // 
             // buOk
@@ -181,7 +110,7 @@
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(400, 212);
+            this.button1.Location = new System.Drawing.Point(401, 39);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(24, 23);
             this.button1.TabIndex = 5;
@@ -192,7 +121,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(11, 217);
+            this.label1.Location = new System.Drawing.Point(12, 44);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(101, 13);
             this.label1.TabIndex = 4;
@@ -200,7 +129,7 @@
             // 
             // tbDestFolder
             // 
-            this.tbDestFolder.Location = new System.Drawing.Point(118, 214);
+            this.tbDestFolder.Location = new System.Drawing.Point(119, 41);
             this.tbDestFolder.Name = "tbDestFolder";
             this.tbDestFolder.Size = new System.Drawing.Size(276, 20);
             this.tbDestFolder.TabIndex = 3;
@@ -239,7 +168,7 @@
             this.gbCams.Controls.Add(this.chb3);
             this.gbCams.Controls.Add(this.chb2);
             this.gbCams.Controls.Add(this.chb1);
-            this.gbCams.Location = new System.Drawing.Point(14, 240);
+            this.gbCams.Location = new System.Drawing.Point(15, 139);
             this.gbCams.Name = "gbCams";
             this.gbCams.Size = new System.Drawing.Size(328, 117);
             this.gbCams.TabIndex = 6;
@@ -566,23 +495,74 @@
             this.chb1.Text = "1";
             this.chb1.UseVisualStyleBackColor = true;
             // 
+            // laSourceUrl
+            // 
+            this.laSourceUrl.AutoSize = true;
+            this.laSourceUrl.Location = new System.Drawing.Point(12, 18);
+            this.laSourceUrl.Name = "laSourceUrl";
+            this.laSourceUrl.Size = new System.Drawing.Size(83, 13);
+            this.laSourceUrl.TabIndex = 8;
+            this.laSourceUrl.Text = "HTTPS Сервер";
+            // 
+            // tbSourceUrl
+            // 
+            this.tbSourceUrl.Location = new System.Drawing.Point(119, 15);
+            this.tbSourceUrl.Name = "tbSourceUrl";
+            this.tbSourceUrl.Size = new System.Drawing.Size(276, 20);
+            this.tbSourceUrl.TabIndex = 7;
+            // 
+            // laUsername
+            // 
+            this.laUsername.AutoSize = true;
+            this.laUsername.Location = new System.Drawing.Point(12, 70);
+            this.laUsername.Name = "laUsername";
+            this.laUsername.Size = new System.Drawing.Size(55, 13);
+            this.laUsername.TabIndex = 10;
+            this.laUsername.Text = "Username";
+            // 
+            // tbUserName
+            // 
+            this.tbUserName.Location = new System.Drawing.Point(119, 67);
+            this.tbUserName.Name = "tbUserName";
+            this.tbUserName.Size = new System.Drawing.Size(224, 20);
+            this.tbUserName.TabIndex = 9;
+            // 
+            // laPassword
+            // 
+            this.laPassword.AutoSize = true;
+            this.laPassword.Location = new System.Drawing.Point(12, 96);
+            this.laPassword.Name = "laPassword";
+            this.laPassword.Size = new System.Drawing.Size(53, 13);
+            this.laPassword.TabIndex = 12;
+            this.laPassword.Text = "Password";
+            // 
+            // tbPassword
+            // 
+            this.tbPassword.Location = new System.Drawing.Point(119, 93);
+            this.tbPassword.Name = "tbPassword";
+            this.tbPassword.Size = new System.Drawing.Size(224, 20);
+            this.tbPassword.TabIndex = 11;
+            // 
             // fmProfile
             // 
             this.AcceptButton = this.buOk;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(532, 366);
+            this.ClientSize = new System.Drawing.Size(532, 322);
+            this.Controls.Add(this.laPassword);
+            this.Controls.Add(this.tbPassword);
+            this.Controls.Add(this.laUsername);
+            this.Controls.Add(this.tbUserName);
+            this.Controls.Add(this.laSourceUrl);
+            this.Controls.Add(this.tbSourceUrl);
             this.Controls.Add(this.gbCams);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.tbDestFolder);
             this.Controls.Add(this.paButton);
-            this.Controls.Add(this.gbVideoSource);
             this.MinimumSize = new System.Drawing.Size(540, 360);
             this.Name = "fmProfile";
             this.Text = "Свойства";
-            this.gbVideoSource.ResumeLayout(false);
-            this.gbVideoSource.PerformLayout();
             this.paButton.ResumeLayout(false);
             this.gbCams.ResumeLayout(false);
             this.gbCams.PerformLayout();
@@ -592,15 +572,11 @@
         }
 
         #endregion
-
-        private System.Windows.Forms.GroupBox gbVideoSource;
         private System.Windows.Forms.Panel paButton;
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.TextBox tbDestFolder;
         private System.Windows.Forms.GroupBox gbCams;
-        private System.Windows.Forms.RadioButton rbList;
-        private System.Windows.Forms.RadioButton rbLocalDisk;
         private System.Windows.Forms.CheckBox chb32;
         private System.Windows.Forms.CheckBox chb31;
         private System.Windows.Forms.CheckBox chb30;
@@ -635,9 +611,12 @@
         private System.Windows.Forms.CheckBox chb1;
         private System.Windows.Forms.Button buOk;
         private System.Windows.Forms.Button buCancel;
-        private System.Windows.Forms.Button buRemoveSource;
-        private System.Windows.Forms.Button buAddSource;
-        private System.Windows.Forms.ListBox lbSources;
         private System.Windows.Forms.FolderBrowserDialog folderBrowserDialog1;
+        private System.Windows.Forms.Label laSourceUrl;
+        private System.Windows.Forms.TextBox tbSourceUrl;
+        private System.Windows.Forms.Label laUsername;
+        private System.Windows.Forms.TextBox tbUserName;
+        private System.Windows.Forms.Label laPassword;
+        private System.Windows.Forms.TextBox tbPassword;
     }
 }

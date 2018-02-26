@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace VideoBack
 {
@@ -11,17 +13,66 @@ namespace VideoBack
     {
         private const string FOLDER_PATTERN = "??-??-?? ??";
         private const string CAMERA_EXT_PATTERN = "*._";
+        private readonly VideoDirClient client;
 
-        public ItvDirectoryCollection()
+        public VideoDirClient GetClient()
         {
+            return client;
         }
 
+        public ItvDirectoryCollection(VideoDirClient client = null)
+        {
+            this.client = client;
+        }
+
+        // for folder version 
         public ItvDirectoryCollection(string path)
         {
             List<string> source = Directory.GetDirectories(path, FOLDER_PATTERN).ToList();
             if (source.Count <= 0) return;
             this.AddRange(source);
             this.SortByDate();
+        }
+
+        // for remote version
+        public bool Login(string username, string password)
+        {
+            return this.client.Login(username, password);
+        }
+
+        // for remote version
+        public void FillFromRemote()
+        {
+            var volumes = this.client.GetVolumes();
+            var dirs = this.client.GetList("");
+            this.AddDirectories(dirs);
+            this.SortByDate();
+        }
+
+        // for ITV specific FOLDER_PATTERN = "??-??-?? HH"
+        public static string GetFolderHour(string folder)
+        {
+            string fileName = Path.GetFileName(folder);
+            Debug.Assert(fileName != null, "fileName != null");
+            return fileName.Substring(9, 2);
+        }
+
+        // for ITV specific FOLDER_PATTERN = "DD-MM-YY ??"
+        public static DateTime GetFolderDate(string folder)
+        {
+            string fileName = Path.GetFileName(folder);
+            Debug.Assert(fileName != null, "fileName != null");
+            return new DateTime(2000 + Int32.Parse(fileName.Substring(6, 2)),
+                Int32.Parse(fileName.Substring(3, 2)), Int32.Parse(fileName.Substring(0, 2)));
+        }
+
+        // Формат даты в папке dd-mm-yy hh - hh это час начиная с 0-23 
+        public static string GetNormalFolderName(string folder)
+        {
+            string fileName = Path.GetFileName(folder);
+            Debug.Assert(fileName != null, "fileName != null");
+            return fileName.Substring(6, 2) + '-' + fileName.Substring(3, 2) + '-'
+              + fileName.Substring(0, 2) + ' ' + fileName.Substring(9, 2);
         }
 
         public void SortByDate()
@@ -48,8 +99,15 @@ namespace VideoBack
         public int AddDirectories(string path)
         {
             string[] directories = Directory.GetDirectories(path, FOLDER_PATTERN);
-            this.AddRange(directories);
-            return directories.Count();
+            return AddDirectories(directories);
+        }
+
+        public int AddDirectories(string[] directories)
+        {
+            var myRegex = new Regex(@"^\d\d-\d\d-\d\d \d\d$");
+            var filtered = Array.FindAll(directories, d => myRegex.IsMatch(d));
+            this.AddRange(filtered);
+            return filtered.Count();
         }
 
         private static int CompareByDate(string x, string y)
@@ -76,8 +134,8 @@ namespace VideoBack
             int yfolderLen = fileNameY.Length;
             if ((xfolderLen == yfolderLen) && (xfolderLen == FOLDER_PATTERN.Length))
             {
-                string normx = Utils.getNormalFolderName(x);
-                string normy = Utils.getNormalFolderName(y);
+                string normx = GetNormalFolderName(x);
+                string normy = GetNormalFolderName(y);
                 return String.Compare(normx, normy, StringComparison.Ordinal);
             }
 
@@ -90,7 +148,7 @@ namespace VideoBack
             //project start 1.1.2012
             DateTime time = new DateTime(2012,1,1);
             if (Count > 0)
-                time = Utils.getFolderDate(this.First());
+                time = GetFolderDate(this.First());
             return time;
         }
 
@@ -99,7 +157,7 @@ namespace VideoBack
             // For proper working must by sorted!
             DateTime time = DateTime.Now;
             if (Count > 0)
-                time = Utils.getFolderDate(this.Last());
+                time = GetFolderDate(this.Last());
             return time;
         }
 
@@ -113,7 +171,7 @@ namespace VideoBack
             int count = 1;
             foreach (var item in this)
             {
-                DateTime current = Utils.getFolderDate(item);
+                DateTime current = GetFolderDate(item);
                 if (current != day)
                 {
                     day = current;
@@ -130,7 +188,7 @@ namespace VideoBack
             while (Count > 0)
             {
                 string folder = this.First();
-                if (Utils.getFolderDate(folder) > date)
+                if (GetFolderDate(folder) > date)
                 {
                     break;
                 }
@@ -144,7 +202,7 @@ namespace VideoBack
         {
             for (int i = 0; i<Count; i++)
             {
-                if (Utils.getFolderDate(this[i]) == date)
+                if (GetFolderDate(this[i]) == date)
                 {
                     while (i != Count)
                         Remove(this.Last());
@@ -160,7 +218,7 @@ namespace VideoBack
                 ItvDirectoryCollection source = new ItvDirectoryCollection(folder);
                 if (source.Count > 0)
                 {
-                    time = Utils.getFolderDate(source.Last());
+                    time = GetFolderDate(source.Last());
                 }
             }
             return time;
@@ -190,10 +248,39 @@ namespace VideoBack
         {
             string searchPattern = "*._" + camera.ToString("D2");
             return this.Where(strItem =>
-                              Utils.getFolderDate(strItem) == date
+                              GetFolderDate(strItem) == date
                               ).Select(strItem =>
                                        Directory.GetFiles(strItem, searchPattern)
                                        ).SelectMany(files => files);
+        }
+
+        public IEnumerable<string> GetRemoteVideoData(string path, int camera)
+        {
+            var files = this.client.GetList(path);
+            var myRegex = new Regex("._" + camera.ToString("D2"));
+            var filtered = Array.FindAll(files, f => myRegex.IsMatch(f));
+            return filtered;
+        }
+
+        //copy data for single cam from server
+        public long CopyRemoteData(ItvDirectoryCollection source, string path, int camera, string destFolder)
+        {
+            long bytesProcessed = 0L;
+            foreach (string strRecord in source.GetRemoteVideoData(path, camera))
+            {
+                Debug.Assert(strRecord != null, "filePath != null");
+                string destPath = Path.Combine(destFolder, path);
+                if (!Directory.Exists(destPath))
+                {
+                    Directory.CreateDirectory(destPath);
+                }
+                destPath = Path.Combine(destPath, strRecord);
+                if (File.Exists(destPath)) continue;
+
+                // get file from server
+                bytesProcessed += client.GetFile(Path.Combine(path, strRecord), destFolder);
+            }
+            return bytesProcessed;
         }
     }
 }

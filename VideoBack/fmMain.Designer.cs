@@ -41,8 +41,8 @@
             this.buCopy = new System.Windows.Forms.Button();
             this.buCancel = new System.Windows.Forms.Button();
             this.paParam = new System.Windows.Forms.Panel();
+            this.laSourceUrl = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
-            this.lbSources = new System.Windows.Forms.ListBox();
             this.laDestFolder = new System.Windows.Forms.Label();
             this.laCamsArray = new System.Windows.Forms.Label();
             this.dtLastCopiedDate = new System.Windows.Forms.DateTimePicker();
@@ -52,6 +52,7 @@
             this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
             this.lbLog = new System.Windows.Forms.ListBox();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
+            this.buPing = new System.Windows.Forms.Button();
             this.statusStrip1.SuspendLayout();
             this.paButton.SuspendLayout();
             this.paParam.SuspendLayout();
@@ -76,6 +77,7 @@
             // paButton
             // 
             this.paButton.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.paButton.Controls.Add(this.buPing);
             this.paButton.Controls.Add(this.buProfile);
             this.paButton.Controls.Add(this.buCheck);
             this.paButton.Controls.Add(this.buClose);
@@ -90,7 +92,7 @@
             // 
             // buProfile
             // 
-            this.buProfile.Location = new System.Drawing.Point(15, 114);
+            this.buProfile.Location = new System.Drawing.Point(15, 129);
             this.buProfile.Name = "buProfile";
             this.buProfile.Size = new System.Drawing.Size(85, 24);
             this.buProfile.TabIndex = 9;
@@ -159,8 +161,8 @@
             // 
             // paParam
             // 
+            this.paParam.Controls.Add(this.laSourceUrl);
             this.paParam.Controls.Add(this.label4);
-            this.paParam.Controls.Add(this.lbSources);
             this.paParam.Controls.Add(this.laDestFolder);
             this.paParam.Controls.Add(this.laCamsArray);
             this.paParam.Controls.Add(this.dtLastCopiedDate);
@@ -173,28 +175,31 @@
             this.paParam.Size = new System.Drawing.Size(529, 114);
             this.paParam.TabIndex = 12;
             // 
+            // laSourceUrl
+            // 
+            this.laSourceUrl.AutoSize = true;
+            this.laSourceUrl.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.laSourceUrl.Location = new System.Drawing.Point(116, 34);
+            this.laSourceUrl.Name = "laSourceUrl";
+            this.laSourceUrl.Size = new System.Drawing.Size(63, 13);
+            this.laSourceUrl.TabIndex = 11;
+            this.laSourceUrl.Text = "Источник";
+            this.toolTip1.SetToolTip(this.laSourceUrl, " ");
+            // 
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(12, 35);
+            this.label4.Location = new System.Drawing.Point(12, 37);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(55, 13);
             this.label4.TabIndex = 10;
             this.label4.Text = "Источник";
             // 
-            // lbSources
-            // 
-            this.lbSources.FormattingEnabled = true;
-            this.lbSources.Location = new System.Drawing.Point(119, 25);
-            this.lbSources.Name = "lbSources";
-            this.lbSources.Size = new System.Drawing.Size(395, 43);
-            this.lbSources.TabIndex = 9;
-            // 
             // laDestFolder
             // 
             this.laDestFolder.AutoSize = true;
             this.laDestFolder.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.laDestFolder.Location = new System.Drawing.Point(119, 71);
+            this.laDestFolder.Location = new System.Drawing.Point(116, 59);
             this.laDestFolder.Name = "laDestFolder";
             this.laDestFolder.Size = new System.Drawing.Size(96, 13);
             this.laDestFolder.TabIndex = 8;
@@ -214,7 +219,7 @@
             // 
             // dtLastCopiedDate
             // 
-            this.dtLastCopiedDate.Location = new System.Drawing.Point(119, 87);
+            this.dtLastCopiedDate.Location = new System.Drawing.Point(119, 82);
             this.dtLastCopiedDate.Name = "dtLastCopiedDate";
             this.dtLastCopiedDate.Size = new System.Drawing.Size(125, 20);
             this.dtLastCopiedDate.TabIndex = 6;
@@ -224,7 +229,7 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(12, 91);
+            this.label3.Location = new System.Drawing.Point(12, 88);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(76, 13);
             this.label3.TabIndex = 5;
@@ -233,7 +238,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(12, 9);
+            this.label2.Location = new System.Drawing.Point(12, 11);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(46, 13);
             this.label2.TabIndex = 4;
@@ -242,7 +247,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(12, 70);
+            this.label1.Location = new System.Drawing.Point(12, 61);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(101, 13);
             this.label1.TabIndex = 1;
@@ -264,6 +269,18 @@
             this.lbLog.Name = "lbLog";
             this.lbLog.Size = new System.Drawing.Size(529, 290);
             this.lbLog.TabIndex = 13;
+            // 
+            // buPing
+            // 
+            this.buPing.Enabled = false;
+            this.buPing.Location = new System.Drawing.Point(15, 99);
+            this.buPing.Name = "buPing";
+            this.buPing.Size = new System.Drawing.Size(85, 24);
+            this.buPing.TabIndex = 10;
+            this.buPing.Text = "Ping";
+            this.toolTip1.SetToolTip(this.buPing, "Проверка последовательности скопированных данных");
+            this.buPing.UseVisualStyleBackColor = true;
+            this.buPing.Click += new System.EventHandler(this.buPing_Click);
             // 
             // fmMain
             // 
@@ -313,8 +330,8 @@
         private System.Windows.Forms.Button buProfile;
         private System.Windows.Forms.Label laDestFolder;
         private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.ListBox lbSources;
-
+        private System.Windows.Forms.Label laSourceUrl;
+        private System.Windows.Forms.Button buPing;
     }
 }
 

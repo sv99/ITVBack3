@@ -72,12 +72,6 @@
     <Compile Include="fmProfile.Designer.cs">
       <DependentUpon>fmProfile.cs</DependentUpon>
     </Compile>
-    <Compile Include="fmSourceEdit.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="fmSourceEdit.Designer.cs">
-      <DependentUpon>fmSourceEdit.cs</DependentUpon>
-    </Compile>
     <Compile Include="ItvDirectoryCollection.cs" />
     <Compile Include="fmCams.cs">
       <SubType>Form</SubType>
@@ -91,11 +85,14 @@
     <Compile Include="fmMain.Designer.cs">
       <DependentUpon>fmMain.cs</DependentUpon>
     </Compile>
+    <Compile Include="JSONParser.cs" />
+    <Compile Include="JSONWriter.cs" />
     <Compile Include="Profile.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="Utils.cs" />
+    <Compile Include="VideoDirClient.cs" />
     <EmbeddedResource Include="fmCams.resx">
       <DependentUpon>fmCams.cs</DependentUpon>
     </EmbeddedResource>
@@ -104,9 +101,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="fmProfile.resx">
       <DependentUpon>fmProfile.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="fmSourceEdit.resx">
-      <DependentUpon>fmSourceEdit.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

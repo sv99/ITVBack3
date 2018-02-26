@@ -19,21 +19,10 @@ namespace VideoBack
             InitializeComponent();
             this.Profile = profile;
             InitCams();
-            if (this.Profile.IsLocalScan)
-            {
-                this.rbLocalDisk.Checked = true;
-            }
-            else
-            {
-                this.rbList.Checked = true;
-            }
+            this.tbSourceUrl.Text = this.Profile.SourceUrl;
             this.tbDestFolder.Text = this.Profile.DestFolder;
-            this.lbSources.Items.Clear();
-            if (this.rbList.Checked)
-            {
-                foreach (string item in this.Profile.SourceFolders)
-                    this.lbSources.Items.Add(item);
-            }
+            this.tbUserName.Text = this.Profile.Username;
+            this.tbPassword.Text = this.Profile.Password;
         }
 
         public fmProfile()
@@ -80,43 +69,6 @@ namespace VideoBack
             this.Profile.Cams = res;
         }
 
-        private void buAddSource_Click(object sender, EventArgs e)
-        {
-            if (this.lbSources.SelectedIndex >= 0)
-                this.folderBrowserDialog1.SelectedPath = (string)this.lbSources.SelectedItem;
-            if (this.folderBrowserDialog1.ShowDialog() == DialogResult.OK)
-             {
-                // Добавляем только если нет в списке
-                string path = this.folderBrowserDialog1.SelectedPath;
-                this.lbSources.Items.Add(path);
-                if (this.lbSources.Items.IndexOf(path) < 0)
-                {
-                    this.lbSources.Items.Add(path);
-                }
-                else
-                {
-                    MessageBox.Show("Папка уже есть в списке источников!", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
-            }
-        }
-
-        private void buRemoveSource_Click(object sender, EventArgs e)
-        {
-            if (this.lbSources.SelectedIndex >= 0)
-                this.lbSources.Items.RemoveAt(this.lbSources.SelectedIndex);
-        }
-
-        private void lbSources_DoubleClick(object sender, EventArgs e)
-        {
-            if (this.lbSources.SelectedIndex < 0) return;
-            fmSourceEdit fm = new fmSourceEdit((string)this.lbSources.SelectedItem);
-            fm.Location = Cursor.Position;
-            if (fm.ShowDialog() == DialogResult.OK)
-            {
-                this.lbSources.Items[this.lbSources.SelectedIndex] = fm.Source;
-            }
-        }
-        
         private void buOk_Click(object sender, EventArgs e)
         {
             UpdateCams();
@@ -128,25 +80,12 @@ namespace VideoBack
                 return;
             }
             //this.laCamsArray.Text = fm.Cams;
-            this.Profile.IsLocalScan = this.rbLocalDisk.Checked;
+            this.Profile.SourceUrl = this.tbSourceUrl.Text;
             this.Profile.DestFolder = this.tbDestFolder.Text;
-            this.Profile.SourceFolders.Clear();
-            if (this.rbList.Checked)
-            {
-                this.Profile.SourceFolders.Clear();
-                foreach (string item in this.lbSources.Items)
-                    this.Profile.SourceFolders.Add(item);
-            }
+            this.Profile.Username = this.tbUserName.Text;
+            this.Profile.Password = this.tbPassword.Text;
             this.DialogResult = DialogResult.OK;
             Close();
-        }
-
-        private void rbLocalDisk_CheckedChanged(object sender, EventArgs e)
-        {
-            bool bList = this.rbList.Checked;
-            this.lbSources.Enabled = bList;
-            this.buAddSource.Enabled = bList;
-            this.buRemoveSource.Enabled = bList;
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -158,6 +97,5 @@ namespace VideoBack
             }
         }
 
- 
     }
 }
