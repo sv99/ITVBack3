@@ -176,6 +176,12 @@ namespace VideoBack
                 int.TryParse(json, out result);
                 return result;
             }
+            if (type == typeof(long))
+            {
+                long result;
+                long.TryParse(json, out result);
+                return result;
+            }
             if (type == typeof(byte))
             {
                 byte result;

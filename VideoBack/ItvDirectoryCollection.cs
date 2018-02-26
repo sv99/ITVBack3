@@ -263,22 +263,29 @@ namespace VideoBack
         }
 
         //copy data for single cam from server
-        public long CopyRemoteData(ItvDirectoryCollection source, string path, int camera, string destFolder)
+        public long CopyRemoteData(string path, int camera, string destFolder)
         {
             long bytesProcessed = 0L;
-            foreach (string strRecord in source.GetRemoteVideoData(path, camera))
+            foreach (string eventName in this.GetRemoteVideoData(path, camera))
             {
-                Debug.Assert(strRecord != null, "filePath != null");
+                Debug.Assert(eventName != null, "filePath != null");
                 string destPath = Path.Combine(destFolder, path);
                 if (!Directory.Exists(destPath))
                 {
                     Directory.CreateDirectory(destPath);
                 }
-                destPath = Path.Combine(destPath, strRecord);
-                if (File.Exists(destPath)) continue;
-
+                var eventPath = Path.Combine(destPath, eventName);
+                var queryPath = Path.Combine(path, eventName);
+                if (File.Exists(eventPath))
+                {
+                    // check file size
+                    var destSize = new FileInfo(eventPath).Length;
+                    var remSize = client.GetFileSize(queryPath);
+                    if (destSize == remSize)
+                        continue;
+                }
                 // get file from server
-                bytesProcessed += client.GetFile(Path.Combine(path, strRecord), destFolder);
+                bytesProcessed += client.GetFile(queryPath, destFolder);
             }
             return bytesProcessed;
         }

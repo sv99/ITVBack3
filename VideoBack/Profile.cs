@@ -15,6 +15,7 @@ namespace VideoBack
         public string SourceUrl { get; set; }
         public string Username { get; set; }
         public string Password { get; set; }
+        public bool IsIntellect { get; set; }
 
         public Profile()
         {
@@ -22,7 +23,7 @@ namespace VideoBack
 
         public static Profile DefaultProfile()
         {
-            return new Profile { Cams = "22" };
+            return new Profile { Cams = "22", IsIntellect = true };
         }
 
         /// <summary>

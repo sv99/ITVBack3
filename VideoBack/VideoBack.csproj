@@ -72,6 +72,7 @@
     <Compile Include="fmProfile.Designer.cs">
       <DependentUpon>fmProfile.cs</DependentUpon>
     </Compile>
+    <Compile Include="GeovisionDirectoryCollection.cs" />
     <Compile Include="ItvDirectoryCollection.cs" />
     <Compile Include="fmCams.cs">
       <SubType>Form</SubType>

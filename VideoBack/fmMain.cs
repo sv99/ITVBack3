@@ -16,7 +16,8 @@ namespace VideoBack
             InitializeComponent();
         }
 
-        // Properties
+        #region Properties
+
         public string DestFolder
         {
             get
@@ -29,13 +30,11 @@ namespace VideoBack
                 if (Directory.Exists(value))
                 {
                     this.buCopy.Enabled = true;
-                    this.buCheck.Enabled = true;
                     this.LastCopiedDate = ItvDirectoryCollection.GetFolderLastDate(value);
                 }
                 else 
                 {
                     this.buCopy.Enabled = false;
-                    this.buCheck.Enabled = false;                    
                 }
             }
         }
@@ -88,6 +87,22 @@ namespace VideoBack
             }
         }
 
+        private void SetType(bool isIntellect)
+        {
+            this.laType.Text = Program.profile.IsIntellect ? "Intellect" : "Geovision";
+        }
+
+        #endregion
+
+        private void AddLog(string sMessage, bool bAddDate = true)
+        {
+            int num = this.lbLog.Items.Add(sMessage);
+            this.lbLog.SelectedIndex = num;
+            if (bAddDate)
+                sMessage = DateTime.Now.ToString(CultureInfo.InvariantCulture) + ' ' + sMessage;
+            File.AppendAllText(Path.ChangeExtension(Application.ExecutablePath, ".log"), sMessage + "\r\n");
+        }
+
         // сохранение и восстановление состояния в user.config
         private void fmMain_Load(object sender, EventArgs e)
         {
@@ -103,17 +118,12 @@ namespace VideoBack
             this.laCamsArray.Text = Program.profile.Cams;
             this.SourceUrl = Program.profile.SourceUrl;
             this.DestFolder = Program.profile.DestFolder;
+            this.SetType(Program.profile.IsIntellect); 
         }
 
         #region Buttons Events
 
         // Кнопки управления
-        // Проверка последовательности записанных данных в папке назначения
-        private void buCheck_Click(object sender, EventArgs e)
-        {
-            CheckDestSequence(this.DestFolder);
-        }
-
         private void buClearLog_Click(object sender, EventArgs e)
         {
             this.lbLog.Items.Clear();
@@ -149,12 +159,19 @@ namespace VideoBack
                 return;
             }
             SetCopyState(true);
-            this.backgroundWorker1.RunWorkerAsync();
+            this.AddLog("Старт копирования");
+            if (Program.profile.IsIntellect)
+                this.bwIntellect.RunWorkerAsync();
+            else
+                this.bwGeovision.RunWorkerAsync();
         }
 
         private void buCancel_Click(object sender, EventArgs e)
         {
-            this.backgroundWorker1.CancelAsync();
+            if (this.bwIntellect.IsBusy)
+                this.bwIntellect.CancelAsync();
+            if (this.bwGeovision.IsBusy)
+                this.bwGeovision.CancelAsync();
             this.buCancel.Enabled = false;
         }
 
@@ -193,17 +210,16 @@ namespace VideoBack
         #region BackgroundWorker
 
         // Асинхронный цикл копирования файлов
-        private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e)
+        private void bwIntellect_DoWork(object sender, DoWorkEventArgs e)
         {
             BackgroundWorker worker = sender as BackgroundWorker;
             if (worker == null) throw new ArgumentNullException("BackgroundWorker is null");
 
-            worker.ReportProgress(0, "Старт копирования");
             //ItvDirectoryCollection source = (e.Argument as ItvDirectoryCollection) ?? new ItvDirectoryCollection();
             ItvDirectoryCollection source = new ItvDirectoryCollection(new VideoDirClient(this.SourceUrl));
             if (!source.Login(Program.profile.Username, Program.profile.Password))
             {
-                worker.ReportProgress(100, "Invalid credetials");
+                this.Invoke(new Action(() => this.AddLog("Invalid credetials")));
                 return;
             }
             source.FillFromRemote();
@@ -219,84 +235,96 @@ namespace VideoBack
                 this.toolStripProgressBar1.Maximum = source.Count;
                 this.toolStripProgressBar1.Value = 0;
             }));
+            this.Invoke(new Action(() => this.AddLog("Найдено каталогов с данными: " + source.Count)));
 
-            int[] cams = this.Cams;
-            //int dayCount = 0;
             int folderCounter = 0;
             foreach (string path in source)
             {
+                if (worker.CancellationPending)
+                {
+                    e.Cancel = true;
+                    this.Invoke(new Action(() => this.AddLog("Копирование прервано, необработано: " + (source.Count - folderCounter))));
+                    return;
+                }
                 long num5 = 0L;
                 DateTime start = DateTime.Now;
                 foreach (int cam in this.Cams)
                 { 
-                    if (worker.CancellationPending)
-                    {
-                        e.Cancel = true;
-                        worker.ReportProgress(100, "Копирование прервано, необработано: " + (source.Count - folderCounter));
-                        break;
-                    }
-                    num5 += source.CopyRemoteData(source, path, cam, this.DestFolder);
-                }
-                if (num5 > 0)
-                {
-                    TimeSpan elapsed = DateTime.Now.Subtract(start);
-                    worker.ReportProgress(folderCounter,
-                            " Скопировано из " + path + " размер: " + GetSizeMb(num5)
-                            + " " + GetTimeMinSek(elapsed) + " сек");
+                    num5 += source.CopyRemoteData(path, cam, this.DestFolder);
                 }
                 folderCounter++;
+                this.Invoke(new Action(() => {
+                    this.toolStripProgressBar1.Value = folderCounter;
+                    if (num5 > 0)
+                    {
+                        TimeSpan elapsed = DateTime.Now.Subtract(start);
+                        this.AddLog(" Скопировано из " + path + " размер: " + GetSizeMb(num5)
+                            + " " + GetTimeMinSek(elapsed) + " сек");
+                    }
+                }));
             }
         }
 
-        private void backgroundWorker1_ProgressChanged(object sender, ProgressChangedEventArgs e)
+        private void RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
-            string userState = e.UserState as string;
-            if (userState != null)
-            {
-                this.AddLog(userState);
-            }
-            this.toolStripProgressBar1.Value = e.ProgressPercentage;
-        }
-
-        private void backgroundWorker1_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
-        {
-            this.toolStripProgressBar1.Maximum = 100;
-            this.toolStripProgressBar1.Value = 100;
+            this.toolStripProgressBar1.Value = this.toolStripProgressBar1.Maximum;
             this.SetCopyState(false);
             this.AddLog("Копирование завершено");
         }
 
-        // copy data from many cams 
-        private long CopyData(ItvDirectoryCollection source, DateTime date, IEnumerable<int> cams)
+        private void bwGeovision_DoWork(object sender, DoWorkEventArgs e)
         {
-            long num = 0L;
-            foreach (var cam in cams)
-            {
-                num += CopyData(source, date, cam);
-            }
-            return num;
-        }
+            BackgroundWorker worker = sender as BackgroundWorker;
+            if (worker == null) throw new ArgumentNullException("BackgroundWorker is null");
 
-        //copy data from single cam by file access
-        private long CopyData(ItvDirectoryCollection source, DateTime date, int camera)
-        {
-            long num = 0L;
-            foreach (string strRecord in source.GetDayData(date, camera))
+            VideoDirClient client = new VideoDirClient(this.SourceUrl);
+            if (!client.Login(Program.profile.Username, Program.profile.Password))
             {
-                Debug.Assert(strRecord != null, "filePath != null");
-                var fileName = Path.GetFileName(Path.GetDirectoryName(strRecord)) ?? "";
-                string path = Path.Combine(this.DestFolder, fileName);
-                if (!Directory.Exists(path))
-                {
-                    Directory.CreateDirectory(path);
-                }
-                fileName = Path.GetFileName(strRecord) ?? "";
-                string strRecordDest = Path.Combine(path, fileName);
-                if (File.Exists(strRecordDest)) continue;
-                num += new FileInfo(strRecord).Length;
-                File.Copy(strRecord, strRecordDest);
+                this.Invoke(new Action(() => this.AddLog("Invalid credetials: " + client.GetErrorMessage())));
+                return;
             }
-            return num;
+
+            // каждую камеру обрабатывае отдельно
+            foreach (int cam in this.Cams)
+            {
+                var source = new GeovisionDirectoryCollection(cam, this.LastCopiedDate);
+                source.FillFromServer(client);
+
+                // start coping data
+                // set progress bar from worker thread
+                this.Invoke(new Action(() =>
+                {
+                    this.toolStripProgressBar1.Maximum = source.Count;
+                    this.toolStripProgressBar1.Value = 0;
+                }));
+                this.Invoke(new Action(() => this.AddLog("Камера " + cam + " найдено каталогов с данными: " + source.Count)));
+
+                //int dayCount = 0;
+                int folderCounter = 0;
+                foreach (string path in source)
+                {
+                    if (worker.CancellationPending)
+                    {
+                        e.Cancel = true;
+                        this.Invoke(new Action(() => this.AddLog("Копирование прервано, необработано: " + (source.Count - folderCounter))));
+                        return;
+                    }
+                    DateTime start = DateTime.Now;
+                    var num5 = source.CopyRemoteData(client, path, this.DestFolder);
+
+                    folderCounter++;
+                    this.Invoke(new Action(() =>
+                    {
+                        this.toolStripProgressBar1.Value = folderCounter;
+                        if (num5 > 0)
+                        {
+                            TimeSpan elapsed = DateTime.Now.Subtract(start);
+                            this.AddLog(" Скопировано из " + path + " размер: " + GetSizeMb(num5)
+                                + " " + GetTimeMinSek(elapsed) + " сек");
+                        }
+                    }));
+                }
+            }
         }
 
         #endregion
@@ -332,38 +360,6 @@ namespace VideoBack
             if (span.Minutes > 0)
                 return string.Format("{0}:{1}.{2}", span.Minutes, span.Seconds, span.Milliseconds);
             return string.Format("{0}.{1}", span.Seconds, span.Milliseconds);
-        }
-
-        private void AddLog(string sMessage, bool bAddDate = true)
-        {
-            int num = this.lbLog.Items.Add(sMessage);
-            this.lbLog.SelectedIndex = num;
-            if (bAddDate)
-                sMessage = DateTime.Now.ToString(CultureInfo.InvariantCulture) + ' ' + sMessage;
-            File.AppendAllText(Path.ChangeExtension(Application.ExecutablePath, ".log"), sMessage + "\r\n");
-        }
-
-        private void CheckDestSequence(string folder)
-        {
-            ItvDirectoryCollection source = new ItvDirectoryCollection(folder);
-            this.AddLog("Проверка последовательности скопированных данных: start");
-            this.AddLog("Количество видео папок в каталоге назначения: " + source.Count);
-            if (source.Count == 0) return;
-
-            DateTime dt = source.GetFirstDate();
-            string mes = dt.ToShortDateString();
-            foreach (string f in source)
-            {
-                if (dt != Utils.getFolderDate(f))
-                {
-                    this.AddLog(mes, false);
-                    dt = Utils.getFolderDate(f);
-                    mes = dt.ToShortDateString();
-                }
-                mes = mes + " " + Utils.getFolderHour(f);
-            }
-            this.AddLog(mes, false);
-            this.AddLog("Проверка последовательности скопированных данных: end");
         }
 
     }

@@ -27,14 +27,9 @@ namespace VideoBack
         public string[] path { get; set; }
     }
 
-    public class SONGHISTORY
+    public class FileSize
     {
-        public string PLAYEDAT { get; set; }
-        public string TITLE { get; set; }
-        public string ARTIST { get; set; }
-        public int? ARTISTID { get; set; }
-        public string SONG { get; set; }
-        public int? SONGID { get; set; }
+        public long size { get; set; }
     }
 
     public class VideoDirClient
@@ -42,6 +37,7 @@ namespace VideoBack
         private readonly string url;
         private string[] volumes = null;
         private string token;
+        private string errorMessage;
 
         public VideoDirClient(string url)
         {
@@ -51,118 +47,115 @@ namespace VideoBack
             ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
         }
 
+        public string GetErrorMessage()
+        {
+            return this.errorMessage;
+        }
+
+        private void PrepRequest(ref HttpWebRequest request, string method = "GET", bool isAuth = false)
+        {
+            request.AllowAutoRedirect = false;
+            request.Timeout = 3000;
+            request.Method = method;
+            if (method == "POST")
+                request.ContentType = "application/json; charset=utf-8";
+            if (isAuth)
+                request.Headers.Add("Authorization", "Bearer " + this.token);
+        }
+
+        private void SendJson<T>(ref HttpWebRequest request, T value)
+        {
+            using (var streamWriter = new StreamWriter(request.GetRequestStream()))
+            {
+                string json = value.ToJson();
+                streamWriter.Write(json);
+                streamWriter.Flush();
+            }
+        }
+
+        private T ReadJsonResponse<T>(ref HttpWebRequest request)
+        {
+            using (var response = request.GetResponse())
+            {
+                using (Stream responseStream = response.GetResponseStream())
+                {
+                    StreamReader reader = new StreamReader(responseStream, Encoding.UTF8);
+                    var json = reader.ReadToEnd();
+                    return json.FromJson<T>();
+                }
+            }
+        }
+
         public bool Ping()
         {
-            HttpWebRequest request = (HttpWebRequest)HttpWebRequest.Create(this.url);
             try
-            { 
-                request.AllowAutoRedirect = false; // find out if this site is up and don't follow a redirector
-                request.Timeout = 3000;
+            {
+                HttpWebRequest request = (HttpWebRequest)HttpWebRequest.Create(this.url);
+                PrepRequest(ref request);
                 using (var response = request.GetResponse())
                 {
                     return true;
                 }
             }
-            catch
+            catch (WebException e)
             {
+                this.errorMessage = e.Message;
                 return false;
             }
         }
 
         public bool Login(string username, string password)
         {
-            HttpWebRequest request = (HttpWebRequest)HttpWebRequest.Create(this.url + "/login");
             try
             {
-                request.AllowAutoRedirect = false;
-                request.Timeout = 3000;
-                request.Method = "POST";
-                request.ContentType = "application/json; charset=utf-8";
+                HttpWebRequest request = (HttpWebRequest)HttpWebRequest.Create(this.url + "/login");
 
-                using (var streamWriter = new StreamWriter(request.GetRequestStream()))
-                {
-                    string json = new UserCredentials { username = username, password = password }.ToJson();
-                    streamWriter.Write(json);
-                    streamWriter.Flush();
-                }
+                PrepRequest(ref request, "POST");
+                SendJson(ref request, new UserCredentials { username = username, password = password });
 
-                using (var response = request.GetResponse())
-                {
-                    using (Stream responseStream = response.GetResponseStream())
-                    {
-                        StreamReader reader = new StreamReader(responseStream, Encoding.UTF8);
-                        var json = reader.ReadToEnd();
-                        Token token = json.FromJson<Token>();
-                        this.token = token.token;
-                        return true;
-                    }
-                }
+                Token token = ReadJsonResponse<Token>(ref request);
+                this.token = token.token;
+                return true;
             }
-            catch
+            catch (WebException e)
             {
+                this.errorMessage = e.Message;
             }
             return false;
         }
 
         public string GetVersion()
         {
-            string res = "";
-            HttpWebRequest request = (HttpWebRequest)HttpWebRequest.Create(this.url + "/api/v1/version");
             try
             {
-                request.AllowAutoRedirect = false;
-                request.Timeout = 3000;
-                request.Method = "GET";
-                request.Headers.Add("Authorization", "Bearer " + this.token);
-                request.ContentType = "application/json; charset=utf-8";
-
-                using (var response = request.GetResponse())
-                {
-                    using (Stream responseStream = response.GetResponseStream())
-                    {
-                        StreamReader reader = new StreamReader(responseStream, Encoding.UTF8);
-                        var json = reader.ReadToEnd();
-                        Version ver = json.FromJson<Version>();
-                        res = ver.version;
-                    }
-                }
+                HttpWebRequest request = (HttpWebRequest)HttpWebRequest.Create(this.url + "/api/v1/version");
+                PrepRequest(ref request, "GET", true);
+                Version ver = ReadJsonResponse<Version>(ref request);
+                return ver.version;
             }
-            catch
+            catch (WebException e)
             {
+                this.errorMessage = e.Message;
             }
-            return res;
+            return "";
         }
 
         public string[] GetVolumes()
         {
             if (this.volumes == null)
             {
-                HttpWebRequest request = (HttpWebRequest)HttpWebRequest.Create(this.url + "/api/v1/volumes");
                 try
                 {
-                    request.AllowAutoRedirect = false;
-                    request.Timeout = 3000;
-                    request.Method = "GET";
-                    request.Headers.Add("Authorization", "Bearer " + this.token);
-                    request.ContentType = "application/json; charset=utf-8";
-
-                    using (var response = request.GetResponse())
-                    {
-                        using (Stream responseStream = response.GetResponseStream())
-                        {
-                            StreamReader reader = new StreamReader(responseStream, Encoding.UTF8);
-                            var json = reader.ReadToEnd();
-                            this.volumes = json.FromJson<string[]>();
-                        }
-                    }
+                    HttpWebRequest request = (HttpWebRequest)HttpWebRequest.Create(this.url + "/api/v1/volumes");
+                    PrepRequest(ref request, "GET", true);
+                    this.volumes = ReadJsonResponse<string[]>(ref request);
                 }
-                catch
+                catch (WebException e)
                 {
-                    //return new string[] { };
+                    this.errorMessage = e.Message;
                 }
             }
             return this.volumes;
-
         }
 
         public static string[] SplitPath(string path)
@@ -173,61 +166,31 @@ namespace VideoBack
 
         public string[] GetList(string path)
         {
-            HttpWebRequest request = (HttpWebRequest)HttpWebRequest.Create(this.url + "/api/v1/list");
             try
             {
-                request.AllowAutoRedirect = false;
-                request.Method = "POST";
-                request.Headers.Add("Authorization", "Bearer " + this.token);
-                request.ContentType = "application/json; charset=utf-8";
-
-                using (var streamWriter = new StreamWriter(request.GetRequestStream()))
-                {
-                    string json = new FilePath { path = SplitPath(path) }.ToJson();
-
-                    streamWriter.Write(json);
-                    streamWriter.Flush();
-                }
-
-                using (var response = request.GetResponse())
-                {
-                    using (Stream responseStream = response.GetResponseStream())
-                    {
-                        StreamReader reader = new StreamReader(responseStream, Encoding.UTF8);
-                        var json = reader.ReadToEnd();
-                        var items = json.FromJson<string[]>();
-                        return items;
-                    }
-                }
+                HttpWebRequest request = (HttpWebRequest)HttpWebRequest.Create(this.url + "/api/v1/list");
+                PrepRequest(ref request, "POST", true);
+                SendJson(ref request, new FilePath { path = SplitPath(path) });
+                var items = ReadJsonResponse<string[]>(ref request);
+                return items;
             }
-            catch (Exception e)
+            catch (WebException e)
             {
-                if (e == null)
-                {
-                }
+                this.errorMessage = e.Message;
                 return new string[] { };
             }
         }
 
         public long GetFile(string path, string destFolder)
         {
-            WebResponse response = null;
             try
             {
                 HttpWebRequest request = (HttpWebRequest)HttpWebRequest.Create(this.url + "/api/v1/file");
-                request.AllowAutoRedirect = false;
-                request.Method = "POST";
-                request.Headers.Add("Authorization", "Bearer " + this.token);
-                request.ContentType = "application/json; charset=utf-8";
+                PrepRequest(ref request, "POST", true);
 
-                using (var streamWriter = new StreamWriter(request.GetRequestStream()))
-                {
-                    string json = new FilePath { path = SplitPath(path) }.ToJson();
+                SendJson(ref request, new FilePath { path = SplitPath(path) });
 
-                    streamWriter.Write(json);
-                    streamWriter.Flush();
-                }
-                using (response = request.GetResponse())
+                using (var response = request.GetResponse())
                 {
                     using (var responseStream = response.GetResponseStream())
                     {
@@ -257,10 +220,29 @@ namespace VideoBack
                         return fileSize;
                     }
                 }
-             }
-            catch
+            }
+            catch (WebException e)
             {
-                 return 0L;
+                this.errorMessage = e.Message;
+                return 0L;
+            }
+        }
+
+        public long GetFileSize(string path)
+        {
+            try
+            {
+                HttpWebRequest request = (HttpWebRequest)HttpWebRequest.Create(this.url + "/api/v1/filesize");
+                PrepRequest(ref request, "POST", true);
+
+                SendJson(ref request, new FilePath { path = SplitPath(path) });
+                var size = ReadJsonResponse<FileSize>(ref request);
+                return size.size;
+            }
+            catch (WebException e)
+            {
+                this.errorMessage = e.Message;
+                return 0L;
             }
         }
     }

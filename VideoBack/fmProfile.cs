@@ -23,6 +23,8 @@ namespace VideoBack
             this.tbDestFolder.Text = this.Profile.DestFolder;
             this.tbUserName.Text = this.Profile.Username;
             this.tbPassword.Text = this.Profile.Password;
+            this.rbIntellect.Checked = this.Profile.IsIntellect;
+            this.rbGeovision.Checked = !this.Profile.IsIntellect;
         }
 
         public fmProfile()
@@ -84,6 +86,7 @@ namespace VideoBack
             this.Profile.DestFolder = this.tbDestFolder.Text;
             this.Profile.Username = this.tbUserName.Text;
             this.Profile.Password = this.tbPassword.Text;
+            this.Profile.IsIntellect = this.rbIntellect.Checked;
             this.DialogResult = DialogResult.OK;
             Close();
         }
@@ -96,6 +99,5 @@ namespace VideoBack
                 this.tbDestFolder.Text = this.folderBrowserDialog1.SelectedPath;
             }
         }
-
     }
 }

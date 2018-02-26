@@ -74,6 +74,9 @@
             this.tbUserName = new System.Windows.Forms.TextBox();
             this.laPassword = new System.Windows.Forms.Label();
             this.tbPassword = new System.Windows.Forms.TextBox();
+            this.label2 = new System.Windows.Forms.Label();
+            this.rbIntellect = new System.Windows.Forms.RadioButton();
+            this.rbGeovision = new System.Windows.Forms.RadioButton();
             this.paButton.SuspendLayout();
             this.gbCams.SuspendLayout();
             this.SuspendLayout();
@@ -86,14 +89,14 @@
             this.paButton.Location = new System.Drawing.Point(430, 0);
             this.paButton.Name = "paButton";
             this.paButton.Size = new System.Drawing.Size(102, 322);
-            this.paButton.TabIndex = 1;
+            this.paButton.TabIndex = 66;
             // 
             // buOk
             // 
             this.buOk.Location = new System.Drawing.Point(5, 12);
             this.buOk.Name = "buOk";
             this.buOk.Size = new System.Drawing.Size(85, 24);
-            this.buOk.TabIndex = 35;
+            this.buOk.TabIndex = 64;
             this.buOk.Text = "Ok";
             this.buOk.UseVisualStyleBackColor = true;
             this.buOk.Click += new System.EventHandler(this.buOk_Click);
@@ -104,7 +107,7 @@
             this.buCancel.Location = new System.Drawing.Point(5, 42);
             this.buCancel.Name = "buCancel";
             this.buCancel.Size = new System.Drawing.Size(85, 24);
-            this.buCancel.TabIndex = 34;
+            this.buCancel.TabIndex = 65;
             this.buCancel.Text = "Отмена";
             this.buCancel.UseVisualStyleBackColor = true;
             // 
@@ -113,7 +116,7 @@
             this.button1.Location = new System.Drawing.Point(401, 39);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(24, 23);
-            this.button1.TabIndex = 5;
+            this.button1.TabIndex = 3;
             this.button1.Text = "...";
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.button1_Click);
@@ -132,7 +135,7 @@
             this.tbDestFolder.Location = new System.Drawing.Point(119, 41);
             this.tbDestFolder.Name = "tbDestFolder";
             this.tbDestFolder.Size = new System.Drawing.Size(276, 20);
-            this.tbDestFolder.TabIndex = 3;
+            this.tbDestFolder.TabIndex = 2;
             // 
             // gbCams
             // 
@@ -168,7 +171,7 @@
             this.gbCams.Controls.Add(this.chb3);
             this.gbCams.Controls.Add(this.chb2);
             this.gbCams.Controls.Add(this.chb1);
-            this.gbCams.Location = new System.Drawing.Point(15, 139);
+            this.gbCams.Location = new System.Drawing.Point(15, 170);
             this.gbCams.Name = "gbCams";
             this.gbCams.Size = new System.Drawing.Size(328, 117);
             this.gbCams.TabIndex = 6;
@@ -509,7 +512,7 @@
             this.tbSourceUrl.Location = new System.Drawing.Point(119, 15);
             this.tbSourceUrl.Name = "tbSourceUrl";
             this.tbSourceUrl.Size = new System.Drawing.Size(276, 20);
-            this.tbSourceUrl.TabIndex = 7;
+            this.tbSourceUrl.TabIndex = 1;
             // 
             // laUsername
             // 
@@ -525,7 +528,7 @@
             this.tbUserName.Location = new System.Drawing.Point(119, 67);
             this.tbUserName.Name = "tbUserName";
             this.tbUserName.Size = new System.Drawing.Size(224, 20);
-            this.tbUserName.TabIndex = 9;
+            this.tbUserName.TabIndex = 4;
             // 
             // laPassword
             // 
@@ -540,8 +543,40 @@
             // 
             this.tbPassword.Location = new System.Drawing.Point(119, 93);
             this.tbPassword.Name = "tbPassword";
+            this.tbPassword.PasswordChar = '*';
             this.tbPassword.Size = new System.Drawing.Size(224, 20);
-            this.tbPassword.TabIndex = 11;
+            this.tbPassword.TabIndex = 5;
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(12, 133);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(98, 13);
+            this.label2.TabIndex = 68;
+            this.label2.Text = "Тип регистратора";
+            // 
+            // rbIntellect
+            // 
+            this.rbIntellect.AutoSize = true;
+            this.rbIntellect.Location = new System.Drawing.Point(119, 120);
+            this.rbIntellect.Name = "rbIntellect";
+            this.rbIntellect.Size = new System.Drawing.Size(62, 17);
+            this.rbIntellect.TabIndex = 69;
+            this.rbIntellect.TabStop = true;
+            this.rbIntellect.Text = "Intellect";
+            this.rbIntellect.UseVisualStyleBackColor = true;
+            // 
+            // rbGeovision
+            // 
+            this.rbGeovision.AutoSize = true;
+            this.rbGeovision.Location = new System.Drawing.Point(119, 143);
+            this.rbGeovision.Name = "rbGeovision";
+            this.rbGeovision.Size = new System.Drawing.Size(72, 17);
+            this.rbGeovision.TabIndex = 70;
+            this.rbGeovision.TabStop = true;
+            this.rbGeovision.Text = "Geovision";
+            this.rbGeovision.UseVisualStyleBackColor = true;
             // 
             // fmProfile
             // 
@@ -549,6 +584,9 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(532, 322);
+            this.Controls.Add(this.rbGeovision);
+            this.Controls.Add(this.rbIntellect);
+            this.Controls.Add(this.label2);
             this.Controls.Add(this.laPassword);
             this.Controls.Add(this.tbPassword);
             this.Controls.Add(this.laUsername);
@@ -618,5 +656,8 @@
         private System.Windows.Forms.TextBox tbUserName;
         private System.Windows.Forms.Label laPassword;
         private System.Windows.Forms.TextBox tbPassword;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.RadioButton rbIntellect;
+        private System.Windows.Forms.RadioButton rbGeovision;
     }
 }

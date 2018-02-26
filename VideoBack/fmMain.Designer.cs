@@ -33,14 +33,16 @@
             this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.toolStripProgressBar1 = new System.Windows.Forms.ToolStripProgressBar();
+            this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
             this.paButton = new System.Windows.Forms.Panel();
+            this.buPing = new System.Windows.Forms.Button();
             this.buProfile = new System.Windows.Forms.Button();
-            this.buCheck = new System.Windows.Forms.Button();
             this.buClose = new System.Windows.Forms.Button();
             this.buClearLog = new System.Windows.Forms.Button();
             this.buCopy = new System.Windows.Forms.Button();
             this.buCancel = new System.Windows.Forms.Button();
             this.paParam = new System.Windows.Forms.Panel();
+            this.laType = new System.Windows.Forms.Label();
             this.laSourceUrl = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
             this.laDestFolder = new System.Windows.Forms.Label();
@@ -49,10 +51,10 @@
             this.label3 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
-            this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
+            this.bwIntellect = new System.ComponentModel.BackgroundWorker();
             this.lbLog = new System.Windows.Forms.ListBox();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
-            this.buPing = new System.Windows.Forms.Button();
+            this.bwGeovision = new System.ComponentModel.BackgroundWorker();
             this.statusStrip1.SuspendLayout();
             this.paButton.SuspendLayout();
             this.paParam.SuspendLayout();
@@ -61,7 +63,8 @@
             // statusStrip1
             // 
             this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toolStripProgressBar1});
+            this.toolStripProgressBar1,
+            this.toolStripStatusLabel1});
             this.statusStrip1.Location = new System.Drawing.Point(0, 404);
             this.statusStrip1.Name = "statusStrip1";
             this.statusStrip1.Size = new System.Drawing.Size(642, 22);
@@ -70,16 +73,22 @@
             // 
             // toolStripProgressBar1
             // 
+            this.toolStripProgressBar1.BackColor = System.Drawing.SystemColors.Control;
             this.toolStripProgressBar1.Name = "toolStripProgressBar1";
-            this.toolStripProgressBar1.Size = new System.Drawing.Size(200, 16);
+            this.toolStripProgressBar1.Size = new System.Drawing.Size(550, 16);
             this.toolStripProgressBar1.Step = 5;
+            // 
+            // toolStripStatusLabel1
+            // 
+            this.toolStripStatusLabel1.Name = "toolStripStatusLabel1";
+            this.toolStripStatusLabel1.Size = new System.Drawing.Size(118, 15);
+            this.toolStripStatusLabel1.Text = "toolStripStatusLabel1";
             // 
             // paButton
             // 
             this.paButton.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.paButton.Controls.Add(this.buPing);
             this.paButton.Controls.Add(this.buProfile);
-            this.paButton.Controls.Add(this.buCheck);
             this.paButton.Controls.Add(this.buClose);
             this.paButton.Controls.Add(this.buClearLog);
             this.paButton.Controls.Add(this.buCopy);
@@ -89,6 +98,18 @@
             this.paButton.Name = "paButton";
             this.paButton.Size = new System.Drawing.Size(113, 404);
             this.paButton.TabIndex = 10;
+            // 
+            // buPing
+            // 
+            this.buPing.Enabled = false;
+            this.buPing.Location = new System.Drawing.Point(15, 99);
+            this.buPing.Name = "buPing";
+            this.buPing.Size = new System.Drawing.Size(85, 24);
+            this.buPing.TabIndex = 10;
+            this.buPing.Text = "Ping";
+            this.toolTip1.SetToolTip(this.buPing, "Проверка последовательности скопированных данных");
+            this.buPing.UseVisualStyleBackColor = true;
+            this.buPing.Click += new System.EventHandler(this.buPing_Click);
             // 
             // buProfile
             // 
@@ -100,18 +121,6 @@
             this.toolTip1.SetToolTip(this.buProfile, "Настройка свойств копирования");
             this.buProfile.UseVisualStyleBackColor = true;
             this.buProfile.Click += new System.EventHandler(this.buProfile_Click);
-            // 
-            // buCheck
-            // 
-            this.buCheck.Enabled = false;
-            this.buCheck.Location = new System.Drawing.Point(15, 69);
-            this.buCheck.Name = "buCheck";
-            this.buCheck.Size = new System.Drawing.Size(85, 24);
-            this.buCheck.TabIndex = 8;
-            this.buCheck.Text = "Проверить";
-            this.toolTip1.SetToolTip(this.buCheck, "Проверка последовательности скопированных данных");
-            this.buCheck.UseVisualStyleBackColor = true;
-            this.buCheck.Click += new System.EventHandler(this.buCheck_Click);
             // 
             // buClose
             // 
@@ -161,6 +170,7 @@
             // 
             // paParam
             // 
+            this.paParam.Controls.Add(this.laType);
             this.paParam.Controls.Add(this.laSourceUrl);
             this.paParam.Controls.Add(this.label4);
             this.paParam.Controls.Add(this.laDestFolder);
@@ -174,6 +184,15 @@
             this.paParam.Name = "paParam";
             this.paParam.Size = new System.Drawing.Size(529, 114);
             this.paParam.TabIndex = 12;
+            // 
+            // laType
+            // 
+            this.laType.AutoSize = true;
+            this.laType.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.laType.Location = new System.Drawing.Point(420, 37);
+            this.laType.Name = "laType";
+            this.laType.Size = new System.Drawing.Size(0, 13);
+            this.laType.TabIndex = 12;
             // 
             // laSourceUrl
             // 
@@ -253,13 +272,12 @@
             this.label1.TabIndex = 1;
             this.label1.Text = "Папка назначения";
             // 
-            // backgroundWorker1
+            // bwIntellect
             // 
-            this.backgroundWorker1.WorkerReportsProgress = true;
-            this.backgroundWorker1.WorkerSupportsCancellation = true;
-            this.backgroundWorker1.DoWork += new System.ComponentModel.DoWorkEventHandler(this.backgroundWorker1_DoWork);
-            this.backgroundWorker1.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(this.backgroundWorker1_ProgressChanged);
-            this.backgroundWorker1.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.backgroundWorker1_RunWorkerCompleted);
+            this.bwIntellect.WorkerReportsProgress = true;
+            this.bwIntellect.WorkerSupportsCancellation = true;
+            this.bwIntellect.DoWork += new System.ComponentModel.DoWorkEventHandler(this.bwIntellect_DoWork);
+            this.bwIntellect.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.RunWorkerCompleted);
             // 
             // lbLog
             // 
@@ -270,17 +288,10 @@
             this.lbLog.Size = new System.Drawing.Size(529, 290);
             this.lbLog.TabIndex = 13;
             // 
-            // buPing
+            // bwGeovision
             // 
-            this.buPing.Enabled = false;
-            this.buPing.Location = new System.Drawing.Point(15, 99);
-            this.buPing.Name = "buPing";
-            this.buPing.Size = new System.Drawing.Size(85, 24);
-            this.buPing.TabIndex = 10;
-            this.buPing.Text = "Ping";
-            this.toolTip1.SetToolTip(this.buPing, "Проверка последовательности скопированных данных");
-            this.buPing.UseVisualStyleBackColor = true;
-            this.buPing.Click += new System.EventHandler(this.buPing_Click);
+            this.bwGeovision.DoWork += new System.ComponentModel.DoWorkEventHandler(this.bwGeovision_DoWork);
+            this.bwGeovision.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.RunWorkerCompleted);
             // 
             // fmMain
             // 
@@ -315,7 +326,7 @@
         private System.Windows.Forms.Panel paButton;
         private System.Windows.Forms.Panel paParam;
         private System.Windows.Forms.Label label1;
-        private System.ComponentModel.BackgroundWorker backgroundWorker1;
+        private System.ComponentModel.BackgroundWorker bwIntellect;
         private System.Windows.Forms.Button buCancel;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label3;
@@ -324,7 +335,6 @@
         private System.Windows.Forms.Button buClose;
         private System.Windows.Forms.Button buClearLog;
         private System.Windows.Forms.Button buCopy;
-        private System.Windows.Forms.Button buCheck;
         private System.Windows.Forms.ToolTip toolTip1;
         private System.Windows.Forms.Label laCamsArray;
         private System.Windows.Forms.Button buProfile;
@@ -332,6 +342,9 @@
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Label laSourceUrl;
         private System.Windows.Forms.Button buPing;
+        private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel1;
+        private System.Windows.Forms.Label laType;
+        private System.ComponentModel.BackgroundWorker bwGeovision;
     }
 }
 
