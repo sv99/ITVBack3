@@ -60,7 +60,7 @@ namespace VideoBack
             }
             set
             {
-                this.dtLastCopiedDate.Value = value;
+                this.dtLastCopiedDate.Value = value.Date;
             }
         }
 
@@ -310,7 +310,12 @@ namespace VideoBack
                         return;
                     }
                     DateTime start = DateTime.Now;
-                    var num5 = source.CopyRemoteData(client, path, this.DestFolder);
+                    var events = source.GetRemoteVideoData(client, path);
+                    long num5 = 0L;
+                    if (events.Count() > 0) {
+                        this.Invoke(new Action(() => this.AddLog("В каталоге " + path + " найдено: " + events.Count() + " файлов")));
+                        num5 = source.CopyRemoteData(client, path, this.DestFolder);
+                    }
 
                     folderCounter++;
                     this.Invoke(new Action(() =>

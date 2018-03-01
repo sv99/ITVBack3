@@ -73,7 +73,8 @@ namespace VideoBack
         private string[] FilterEvents(string[] events)
         {
             var filtered = Array.FindAll(events, f => {
-                return GetEventDate(f) >= this.from; 
+                var date = GetEventDate(f);
+                return date >= this.from; 
             });
             return filtered;
         }
@@ -83,9 +84,12 @@ namespace VideoBack
         {
             string eventName = Path.GetFileName(filename);
             Debug.Assert(eventName != null, "fileName != null");
+            var year = Int32.Parse(eventName.Substring(5, 4));
+            var month = Int32.Parse(eventName.Substring(9, 2));
+            var day = Int32.Parse(eventName.Substring(11, 2));
             return new DateTime(Int32.Parse(eventName.Substring(5, 4)),
-                Int32.Parse(eventName.Substring(7, 2)),
-                Int32.Parse(eventName.Substring(9, 2)));
+                Int32.Parse(eventName.Substring(9, 2)),
+                Int32.Parse(eventName.Substring(11, 2)));
         }
 
         public void FillFromServer(VideoDirClient client)

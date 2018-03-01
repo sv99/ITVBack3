@@ -290,6 +290,8 @@
             // 
             // bwGeovision
             // 
+            this.bwGeovision.WorkerReportsProgress = true;
+            this.bwGeovision.WorkerSupportsCancellation = true;
             this.bwGeovision.DoWork += new System.ComponentModel.DoWorkEventHandler(this.bwGeovision_DoWork);
             this.bwGeovision.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.RunWorkerCompleted);
             // 
